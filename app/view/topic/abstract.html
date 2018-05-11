@@ -1,0 +1,45 @@
+<div class='cell'>
+
+  <a class="user_avatar pull-left" href="/user/{{ topic.author.loginname }}">
+    <img src="{{ helper.proxy(topic.author.avatar_url) }}"
+         title="{{ topic.author.loginname }}"
+            />
+  </a>
+
+  <span class="reply_count pull-left">
+    <span class="count_of_replies" title="回复数">
+      {{ topic.reply_count }}
+    </span>
+    <span class="count_seperator">/</span>
+    <span class="count_of_visits" title='点击数'>
+      {{ topic.visit_count }}
+    </span>
+  </span>
+
+  {% if reply and reply.author %}
+  <a class='last_time pull-right' href="/topic/{{ topic._id }}#{{topic.reply._id}}">
+    <img class="user_small_avatar" src="{{ helper.proxy(topic.reply.author.avatar_url) }}">
+    <span class="last_active_time">{{ helper.ago(topic.last_reply_at) }}</span>
+  </a>
+  {% endif %}
+  {% if not reply %}
+    <span class='last_time pull-right'>
+      <span class="last_active_time">{{ helper.ago(topic.create_at) }}</span>
+    </span>
+  {% endif %}
+
+  <div class="topic_title_wrapper">
+
+    {% if topic.top %}
+    <span class='put_top'>置顶</span>
+    {% elif topic.good %}
+    <span class='put_good'>精华</span>
+    {% elif tab and tab == 'all' and helper.tabName(topic.tab) %}
+    <span class="topiclist-tab">{{ helper.tabName(topic.tab) }}</span>
+    {% endif %}
+
+    <a class='topic_title' href='/topic/{{topic._id}}' title='{{topic.title}}'>
+      {{topic.name}}
+    </a>
+  </div>
+</div>

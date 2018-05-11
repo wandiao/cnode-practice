@@ -1,0 +1,3 @@
+# cnode-practice
+only for practice...
+almost the same as [https://github.com/cnodejs/egg-cnode](https://github.com/cnodejs/egg-cnode) but use nunjucks as default viewEngine
