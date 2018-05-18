@@ -85,4 +85,6 @@ module.exports = app => {
     this.update_at = now;
     next();
   });
+
+  return mongoose.model('User', UserSchema);
 };

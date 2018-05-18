@@ -20,6 +20,7 @@ module.exports = appInfo => {
 
   config.mini_assets = process.env.EGG_MINI_ASSETS || false;
 
+
   config.debug = true;
 
   // 版块
@@ -44,7 +45,32 @@ module.exports = appInfo => {
     },
   };
 
+  // database
+  config.redis = {
+    client: {
+      host: process.env.EGG_REDIS_HOST || '127.0.0.1',
+      port: process.env.EGG_REDIS_PORT || 6379,
+      password: process.env.EGG_REDIS_PASSWORD || '',
+      db: process.env.EGG_REDIS_DB || '0',
+    },
+  };
+
+  // passport
+  config.passportGithub = {
+    key: process.env.EGG_PASSPORT_GITHUB_CLIENT_ID || 'test',
+    secret: process.env.EGG_PASSPORT_GITHUB_CLIENT_SECRET || 'test',
+  };
+
   config.list_topic_count = 40;
+
+  // 是否允许直接注册（否则只能走 github 的方式）
+  config.allow_sign_up = true;
+
+  config.auth_cookie_name = 'node_club';
+
+  config.admins = {
+    ADMIN_USER: true,
+  };
 
   return config;
 };

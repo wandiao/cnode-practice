@@ -1,5 +1,6 @@
 'use strict';
 const moment = require('moment');
+const bcrypt = require('bcryptjs');
 
 exports.staticFile = function(filePath) {
   if (filePath.indexOf('http') === 0 || filePath.indexOf('//') === 0) {
@@ -27,4 +28,12 @@ exports.tabName = function(tab) {
   if (pair) {
     return pair[1];
   }
+};
+
+exports.bhash = str => {
+  return bcrypt.hashSync(str, 10);
+};
+
+exports.validateId = str => {
+  return /^[a-zA-Z0-9\-_]+$/i.test(str);
 };
