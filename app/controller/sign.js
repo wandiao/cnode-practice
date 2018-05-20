@@ -4,6 +4,12 @@ const Controller = require('egg').Controller;
 const validator = require('validator');
 
 class SignController extends Controller {
+
+  async showLogin() {
+    const { ctx } = this;
+    await ctx.render('/sign/signin', { pageTitle: '登录' });
+  }
+  
   async showSignup() {
     const { ctx } = this;
     await ctx.render('/sign/signup', {

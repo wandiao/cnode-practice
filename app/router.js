@@ -33,4 +33,6 @@ module.exports = app => {
 
   // github oauth
   app.passport.mount('github');
+
+  router.get('/signin', sign.showLogin); // 进入登录页面
 };
