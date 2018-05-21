@@ -29,7 +29,7 @@ module.exports = app => {
     failureRedirect: '/signin',
   });
 
-  router.post('/passport/local', localStrategy);
+  router.post('/signin', localStrategy);
 
   // github oauth
   app.passport.mount('github');

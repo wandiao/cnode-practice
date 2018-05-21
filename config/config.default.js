@@ -29,6 +29,7 @@ module.exports = appInfo => {
   // add your config here
   config.middleware = [
     'locals',
+    'authUser',
   ];
 
   config.view = {
@@ -70,6 +71,11 @@ module.exports = appInfo => {
 
   config.admins = {
     ADMIN_USER: true,
+  };
+
+  config.passportLocal = {
+    usernameField: 'name',
+    passwordField: 'pass',
   };
 
   return config;

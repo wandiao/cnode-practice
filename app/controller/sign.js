@@ -9,7 +9,54 @@ class SignController extends Controller {
     const { ctx } = this;
     await ctx.render('/sign/signin', { pageTitle: '登录' });
   }
-  
+
+  async signin() {
+    const { ctx, service, config } = this;
+    const name = validator.trim(ctx.request.body.name || '').toLowerCase();
+    const pass = validator.trim(ctx.request.body.pass || '').toLowerCase();
+    if (!name || !pass) {
+      ctx.status = 422;
+      await ctx.render('sign/signin', {
+        error: '信息不完整',
+      });
+      return;
+    }
+    const getUser = username => {
+      if (username.indexOf('@') > 0) {
+        return service.user.getUserByMail(username);
+      }
+      return service.user.getUserByLoginName(username);
+    };
+    const user = await getUser(name);
+    if (!user) {
+      ctx.status = 403;
+      await ctx.render('sign/signin', {
+        error: '用户名不存在',
+      });
+      return;
+    }
+    const equal = ctx.helper.bcompare(pass, user.pass);
+    if (!equal) {
+      ctx.status = 403;
+      await ctx.render('sign/signin', {
+        error: '用户名或密码错误',
+        name,
+      });
+      return;
+    }
+
+    // id存入Cookie, 用于验证过期.
+    const auth_token = user._id + '$$$$'; // 以后可能会存储更多信息，用 $$$$ 来分隔
+    const opts = {
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      signed: true,
+      httpOnly: true,
+    };
+    ctx.cookies.set(config.auth_cookie_name, auth_token, opts); // cookie 有效期30天
+    ctx.redirect('/');
+  }
+
   async showSignup() {
     const { ctx } = this;
     await ctx.render('/sign/signup', {

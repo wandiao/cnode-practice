@@ -3,19 +3,20 @@
 const uuid = require('uuid');
 
 module.exports = app => {
+
   if (app.config.debug) {
     app.config.coreMiddleware.unshift('less');
   }
 
   const localHandler = async (ctx, { username, password }) => {
+    console.log(1);
     const getUser = username => {
       if (username.indexOf('@') > 0) {
         return ctx.service.user.getUserByMail(username);
       }
-      return ctx.user.getUserByLoginName();
+      return ctx.service.user.getUserByLoginName(username);
     };
     const existUser = await getUser(username);
-
     if (!existUser) {
       return null;
     }
@@ -28,9 +29,9 @@ module.exports = app => {
       return null;
     }
 
-    if (!existUser.active) {
-      return null;
-    }
+    // if (!existUser.active) {
+    //   return null;
+    // }
 
     return existUser;
   };

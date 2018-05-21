@@ -34,6 +34,10 @@ exports.bhash = str => {
   return bcrypt.hashSync(str, 10);
 };
 
+exports.bcompare = (str, hash) => {
+  return bcrypt.compareSync(str, hash);
+};
+
 exports.validateId = str => {
   return /^[a-zA-Z0-9\-_]+$/i.test(str);
 };
