@@ -1,6 +1,7 @@
 'use strict';
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 exports.staticFile = function(filePath) {
   if (filePath.indexOf('http') === 0 || filePath.indexOf('//') === 0) {
@@ -40,4 +41,13 @@ exports.bcompare = (str, hash) => {
 
 exports.validateId = str => {
   return /^[a-zA-Z0-9\-_]+$/i.test(str);
+};
+
+exports.escapeSignature = signature => {
+  return signature
+    .split('\n')
+    .map(p => {
+      return validator.escape(p);
+    })
+    .join('<br>');
 };
