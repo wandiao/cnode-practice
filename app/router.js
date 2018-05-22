@@ -8,9 +8,11 @@ module.exports = app => {
   const {
     site,
     sign,
+    user,
   } = controller;
 
   const createUserLimit = middleware.createUserLimit();
+  const userRequired = middleware.userRequired();
 
   router.get('/', site.index);
 
@@ -35,4 +37,7 @@ module.exports = app => {
   app.passport.mount('github');
 
   router.get('/signin', sign.showLogin); // 进入登录页面
+  router.all('/signout', sign.signout);
+
+  router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
 };

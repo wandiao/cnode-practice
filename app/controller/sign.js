@@ -121,6 +121,14 @@ class SignController extends Controller {
       success: '欢迎加入 ' + config.name + '！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号。',
     });
   }
+
+  // 登出
+  async signout() {
+    const { ctx } = this;
+    ctx.session = null;
+    ctx.logout();
+    ctx.redirect('/');
+  }
 }
 
 module.exports = SignController;
