@@ -39,7 +39,7 @@ class UserController extends Controller {
       return await ctx.render('user/setting', { user });
     }
 
-    const { body } = this.request;
+    const { body } = ctx.request;
     const action = body.action;
     if (action === 'change_setting') {
       const url = validator.trim(body.url);
@@ -47,7 +47,7 @@ class UserController extends Controller {
       const weibo = validator.trim(body.weibo);
       const signature = validator.trim(body.signature);
 
-      const user = await service.user.getUserById(ctx.user_id);
+      const user = await service.user.getUserById(ctx.user._id);
       user.url = url;
       user.location = location;
       user.signature = signature;
@@ -57,8 +57,8 @@ class UserController extends Controller {
     }
 
     if (action === 'change_password') {
-      const oldPass = validator.trim(body.oldPass);
-      const newPass = validator.trim(body.newPass);
+      const oldPass = validator.trim(body.old_pass);
+      const newPass = validator.trim(body.new_pass);
       if (!oldPass || !newPass) {
         return showMessage('旧密码或新密码不得为空');
       }

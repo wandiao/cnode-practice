@@ -40,4 +40,5 @@ module.exports = app => {
   router.all('/signout', sign.signout);
 
   router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
+  router.post('/setting', userRequired, user.setting);
 };

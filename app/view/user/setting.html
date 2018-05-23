@@ -86,7 +86,7 @@
           </div>
         </div>
         <input type='hidden' id='action' name='action' value='change_setting'/>
-        <input type='hidden' name='_csrf' value='{{user.csrf}}'/>
+        <input type='hidden' name='_csrf' value='{{csrf}}'/>
 
         <div class='form-actions'>
           <input type='submit' class='span-primary submit_btn' data-loading-text="保存中.." value='保存设置'/>
@@ -115,8 +115,8 @@
             <input class='input-xlarge' type='password' id='new_pass' name='new_pass' size='30'/>
           </div>
         </div>
-        <input type='hidden' id='action' name='action' value='change_password'/>
-        <input type='hidden' name='_csrf' value='{{user.csrf}}'/>
+        <input type='hidden' id='action1' name='action' value='change_password'/>
+        <input type='hidden' name='_csrf' value='{{csrf}}'/>
 
         <div class='form-actions'>
           <input type='submit' class='span-primary submit_btn' data-loading-text="更改中.." value='更改密码'/>
