@@ -78,5 +78,13 @@ module.exports = appInfo => {
     passwordField: 'pass',
   };
 
+  // 每日创建主题数
+  config.topic = {
+    perDayPerUserLimitCount: 10,
+  };
+
+  // 每个 IP 每天可创建用户数
+  config.create_user_per_ip = 1000;
+
   return config;
 };

@@ -19,7 +19,7 @@ class CacheService extends Service {
   async setex(key, value, seconds) {
     const { redis, logger } = this.app;
     const t = Date.now();
-    value = JSON.parse(value);
+    value = JSON.stringify(value);
     await redis.set(key, value, 'EX', seconds);
     const duration = (Date.now() - t);
     logger.debug('Cache', 'set', key, (duration + 'ms').green);

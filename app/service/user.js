@@ -5,6 +5,21 @@ const uuid = require('uuid');
 const Service = require('egg').Service;
 
 class UserService extends Service {
+
+  /*
+   * 根据用户名列表查找用户列表
+   * @param {Array} names 用户名列表
+   * @return {Promise[users]} 承载用户列表的 Promise 对象
+   */
+  async getUsersByNames(names) {
+    if (names.length === 0) {
+      return [];
+    }
+
+    const query = { loginname: { $in: names } };
+    return this.ctx.model.User.find(query).exec();
+  }
+
   makeGravatar(email) {
     return (
       'http://www.gravatar.com/avatar/' +
@@ -65,6 +80,12 @@ class UserService extends Service {
     }
 
     return this.ctx.model.User.findOne({ _id: id }).exec();
+  }
+
+  incrementScoreAndTopicCount(id, score, topic_count) {
+    const query = { _id: id };
+    const update = { $inc: { score, topic_count } };
+    return this.ctx.model.User.findByIdAndUpdate(query, update).exec();
   }
 }
 

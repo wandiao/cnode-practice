@@ -9,9 +9,11 @@ module.exports = app => {
     site,
     sign,
     user,
+    topic,
   } = controller;
 
-  const createUserLimit = middleware.createUserLimit();
+  const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
+  const createTopicLimit = middleware.createTopicLimit(config.topic);
   const userRequired = middleware.userRequired();
 
   router.get('/', site.index);
@@ -41,4 +43,10 @@ module.exports = app => {
 
   router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
   router.post('/setting', userRequired, user.setting);
+
+  // 新建文章界面
+  router.get('/topic/create', userRequired, topic.create);
+  router.post('/topic/create', userRequired, createTopicLimit, topic.put);
+
+  router.get('/topic/:tid', topic.index); // 显示某个话题
 };

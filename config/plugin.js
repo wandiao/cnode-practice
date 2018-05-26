@@ -28,6 +28,11 @@ exports.passportGithub = {
   package: 'egg-passport-github',
 };
 
+exports.validate = {
+  enable: true,
+  package: 'egg-validate',
+};
+
 exports.passportLocal = {
   enable: true,
   package: 'egg-passport-local',

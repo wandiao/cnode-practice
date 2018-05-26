@@ -2,7 +2,7 @@
 
 {% block main %}
 
-{% include '../edit_sidebar_html' %}
+{% include '../edit_sidebar.html' %}
 
 <div id='content'>
   <div class='panel'>
@@ -29,7 +29,6 @@
       </div>
       {% else %}
       {% if action and action == 'edit' %}
-      <% if (typeof action !== 'undefined' && action === 'edit') { %>
       <form id='create_topic_form' action='/topic/{{topic_id}}/edit' method='post'>
         {% else %}
         <form id='create_topic_form' action='/topic/create' method='post'>
@@ -38,29 +37,20 @@
             <span class="tab-selector">选择版块：</span>
             <select name="tab" id="tab-value">
               <option value="">请选择</option>
-              <%
-              var tabValue = '';
-              if (typeof tab !== 'undefined') {
-                tabValue = tab;
-              }
-              tabs.forEach(function (pair) {
-                var value = pair[0];
-                var text = pair[1];
-                %>
-                <option value="<%=value%>" <%= tabValue === value ? 'selected': '' %>><%=text%></option>
-
-              <%});%>
+              {% for value, text in tabs %}
+                <option value="{{value}}" {{'selected' if value == tab else ''}}>{{text}}</option>
+              {% endfor %}
             </select>
             <span id="topic_create_warn"></span>
             <textarea autofocus class='span9' id='title' name='title' rows='1'
                       placeholder="标题字数 10 字以上"
-                    ><%= typeof title !== 'undefined' && title || '' %></textarea>
+                    >{{title}}</textarea>
 
             <div class='markdown_editor in_editor'>
               <div class='markdown_in_editor'>
                 <textarea class='editor' name='content' rows='20'
                           placeholder='文章支持 Markdown 语法, 请注意标记代码'
-                        ><%= typeof content !== 'undefined' && content || '' %></textarea>
+                        >{{content}}</textarea>
 
                 <div class='editor_buttons'>
                   <input type="submit" class='span-primary submit_btn' data-loading-text="提交中"
@@ -71,16 +61,16 @@
             </div>
 
             <input type='hidden' id='topic_tags' name='topic_tags' value=''>
-            <input type='hidden' name='_csrf' value='<%= csrf %>'>
+            <input type='hidden' name='_csrf' value='{{csrf}}'>
           </fieldset>
         </form>
     </div>
-    <% } %>
+    {% endif %}
   </div>
 </div>
 
 <!-- markdown editor -->
-<%- include('../includes/editor.html') %>
+{% include '../includes/editor.html' %}
 <script>
   (function () {
     var editor = new Editor();
@@ -113,5 +103,4 @@
 </script>
 
 {% endblock %}
-<%- include('../editor_sidebar.html') %>
 
