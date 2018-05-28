@@ -113,7 +113,16 @@ class TopicController extends Controller {
         values: allTabs,
       },
     };
-    ctx.validate(RULE_CREATE, body);
+    try {
+      ctx.validate(RULE_CREATE, body);
+    } catch (error) {
+      error = error.errors[0];
+      return await ctx.render('topic/edit', {
+        ...body,
+        edit_error: `${error.field}: ${error.message}`,
+        tabs,
+      });
+    }
     const topic = await service.topic.newAndSave(
       body.title,
       body.content,
@@ -130,6 +139,30 @@ class TopicController extends Controller {
     );
 
     ctx.redirect('/topic/' + topic._id);
+  }
+
+  /**
+   * 收藏主题帖
+   */
+  async collect() {
+    const { ctx, service } = this;
+    const topic_id = ctx.request.body.topic_id;
+
+    const topic = await service.topic.getTopic(topic_id);
+    if (!topic) {
+      ctx.body = { status: 'failed' };
+      return;
+    }
+
+    const doc = await service.topicCollect.getTopicCollect(
+      ctx.user._id,
+      topic._id
+    );
+
+    if (doc) {
+      ctx.body = { status: 'failed' };
+      return;
+    }
   }
 }
 

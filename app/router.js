@@ -49,4 +49,6 @@ module.exports = app => {
   router.post('/topic/create', userRequired, createTopicLimit, topic.put);
 
   router.get('/topic/:tid', topic.index); // 显示某个话题
+
+  router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
 };

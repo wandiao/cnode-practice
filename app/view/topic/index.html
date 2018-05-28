@@ -135,7 +135,7 @@
     <div class='inner topic'>
 
       <div class='topic_content'>
-        {{ helper.markdown(topic.linkedContent) }}
+        {{ helper.markdown(topic.linkedContent) | safe }}
       </div>
     </div>
   </div>
