@@ -64,6 +64,29 @@ class ReplyService extends Service {
       })
     );
   }
+
+  /*
+   * 创建并保存一条回复信息
+   * @param {String} content 回复内容
+   * @param {String} topicId 主题ID
+   * @param {String} authorId 回复作者
+   * @param {String} [replyId] 回复ID，当二级回复时设定该值
+   * @return {Promise} 承载 replay 列表的 Promise 对象
+   */
+  async newAndSave(content, topicId, authorId, replyId = null) {
+    const reply = new this.ctx.model.Reply();
+    reply.content = content;
+    reply.topic_id = topicId;
+    reply.author_id = authorId;
+
+    if (replyId) {
+      reply.reply_id = replyId;
+    }
+
+    await reply.save();
+
+    return reply;
+  }
 }
 
 module.exports = ReplyService;

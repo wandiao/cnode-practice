@@ -71,6 +71,8 @@ module.exports = appInfo => {
 
   config.admins = {
     ADMIN_USER: true,
+    tianxia: true,
+    tianxiadayu: true,
   };
 
   config.passportLocal = {
@@ -85,6 +87,12 @@ module.exports = appInfo => {
 
   // 每个 IP 每天可创建用户数
   config.create_user_per_ip = 1000;
+
+  config.security = {
+    csrf: {
+      ignore: [ '/topic/*/top', '/api/*/*', '/topic/*/good', '/topic/*/lock' ],
+    },
+  };
 
   return config;
 };

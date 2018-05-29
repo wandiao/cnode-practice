@@ -3,6 +3,35 @@
 const Service = require('egg').Service;
 
 class TopicService extends Service {
+
+  /*
+   * 根据主题ID获取主题
+   * @param {String} id 主题ID
+   */
+  async getTopicById(id) {
+    const topic = await this.ctx.model.Topic.findOne({ _id: id }).exec();
+    if (!topic) {
+      return {
+        topic: null,
+        author: null,
+        last_reply: null,
+      };
+    }
+
+    const author = await this.service.user.getUserById(topic.author_id);
+
+    let last_reply = null;
+    if (topic.last_reply) {
+      last_reply = await this.service.reply.getReplyById(topic.last_reply);
+    }
+
+    return {
+      topic,
+      author,
+      last_reply,
+    };
+  }
+
   async getTopicsByQuery(query, opt) {
     query.deleted = false;
     const topics = await this.ctx.model.Topic.find(query, {}, opt).exec();
@@ -23,6 +52,15 @@ class TopicService extends Service {
       // 删除不合规的 topic
       return !!item.author;
     });
+  }
+
+  /*
+   * 根据主题ID，查找一条主题
+   * @param {String} id 主题ID
+   * @param {Function} callback 回调函数
+   */
+  getTopic(id) {
+    return this.ctx.model.Topic.findOne({ _id: id }).exec();
   }
 
   newAndSave(title, content, tab, author_id) {
@@ -68,6 +106,30 @@ class TopicService extends Service {
     const query = { _id: id };
     const update = { $inc: { visit_count: 1 } };
     return this.ctx.model.Topic.findByIdAndUpdate(query, update).exec();
+  }
+
+  incrementCollectCount(id) {
+    const query = { _id: id };
+    const update = { $inc: { collect_count: 1 } };
+    return this.ctx.model.Topic.findByIdAndUpdate(query, update).exec();
+  }
+
+  /*
+   * 更新主题的最后回复信息
+   * @param {String} topicId 主题ID
+   * @param {String} replyId 回复ID
+   * @param {Function} callback 回调函数
+   */
+  updateLastReply(topicId, replyId) {
+    const update = {
+      last_reply: replyId,
+      last_reply_at: new Date(),
+      $inc: {
+        reply_count: 1,
+      },
+    };
+    const opts = { new: true };
+    return this.ctx.model.Topic.findByIdAndUpdate(topicId, update, opts).exec();
   }
 }
 

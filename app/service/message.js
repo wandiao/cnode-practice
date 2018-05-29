@@ -26,6 +26,18 @@ class MessageService extends Service {
 
     return message.save();
   }
+
+  async sendReplyMessage(userId, authorId, topicId, replyId) {
+    const message = this.ctx.model.Message();
+
+    message.type = 'reply';
+    message.master_id = userId;
+    message.author_id = authorId;
+    message.topic_id = topicId;
+    message.reply_id = replyId;
+
+    return message.save();
+  }
 }
 
 module.exports = MessageService;

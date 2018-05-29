@@ -10,11 +10,13 @@ module.exports = app => {
     sign,
     user,
     topic,
+    reply,
   } = controller;
 
   const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
   const createTopicLimit = middleware.createTopicLimit(config.topic);
   const userRequired = middleware.userRequired();
+  const adminRequired = middleware.adminRequired();
 
   router.get('/', site.index);
 
@@ -49,6 +51,16 @@ module.exports = app => {
   router.post('/topic/create', userRequired, createTopicLimit, topic.put);
 
   router.get('/topic/:tid', topic.index); // 显示某个话题
+  router.post('/topic/:tid/top', adminRequired, topic.top); // 将某话题置顶
+  router.post('/topic/:tid/good', adminRequired, topic.good); // 将某话题加精
+  router.post('/topic/:tid/lock', adminRequired, topic.lock); // 将某话题加精
+  router.post('/topic/:tid/delete', adminRequired, topic.delete); // 将某话题加精
+
+  router.get('/topic/:tid/edit', userRequired, topic.showEdit); // 编辑某话题
+  router.post('/topic/:tid/edit', userRequired, topic.update);
 
   router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
+  router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
+
+  router.post('/:topic_id/reply', userRequired, reply.add); // 提交一级回复
 };

@@ -144,7 +144,7 @@
     <div class='header'>
       <span class='col_fade'>{{topic.replies.length }} 回复</span>
     </div>
-    {% for reply in replies %}
+    {% for index, reply in topic.replies %}
     {% include '../reply/reply.html' %}
     {% endfor %}
   </div>
