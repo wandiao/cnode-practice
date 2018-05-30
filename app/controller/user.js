@@ -2,8 +2,62 @@
 
 const Controller = require('egg').Controller;
 const validator = require('validator');
+const utility = require('utility');
+const _ = require('lodash');
 
 class UserController extends Controller {
+
+  async index() {
+    const { ctx, service, config } = this;
+    const user_name = ctx.params.name;
+    const user = await ctx.service.user.getUserByLoginName(user_name);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '这个用户不存在。';
+      return;
+    }
+
+    let query = { author_id: user._id };
+    const opt = { limit: 5, sort: '-create_at' };
+    const [
+      recent_topics, replies,
+    ] = await Promise.all([
+      service.topic.getTopicsByQuery(query, opt),
+      service.reply.getRepliesByAuthorId(user._id, { limit: 20, sort: '-create_at' }),
+    ]);
+
+    // 只显示最近5条
+    const topic_ids = [ ...new Set(replies.map(reply => reply.topic_id.toString())) ].slice(0, 5);
+
+    query = { _id: { $in: topic_ids } };
+    let recent_replies = await service.topic.getTopicsByQuery(query, {});
+
+    recent_replies = _.sortBy(recent_replies, topic => {
+      return topic_ids.indexOf(topic._id.toString());
+    });
+
+    user.url = (() => {
+      if (user.url && user.url.indexOf('http') !== 0) {
+        return 'http://' + user.url;
+      }
+      return user.url;
+    })();
+
+    // 如果用户没有激活，那么管理员可以帮忙激活
+    let token = '';
+    if (!user.active && ctx.user && ctx.user.is_admin) {
+      token = utility.md5(user.email + user.pass + config.session_secret);
+    }
+
+    await ctx.render('user/index', {
+      user,
+      recent_topics,
+      recent_replies,
+      token,
+      pageTitle: `@${user.loginname} 的个人主页`,
+    });
+  }
+
   async showSetting() {
     const { ctx, service } = this;
     const id = ctx.user._id;
@@ -72,6 +126,83 @@ class UserController extends Controller {
       await user.save();
       return showMessage('密码已被修改。', user, true);
     }
+  }
+  async toggleStar() {
+    const { ctx, service } = this;
+    const user_id = ctx.request.body.user_id;
+
+    const user = await service.user.getUserById(user_id);
+    user.is_star = !user.is_star;
+    await user.save();
+    ctx.body = { status: 'success' };
+    return;
+  }
+
+  async block() {
+    const { ctx, service } = this;
+    const action = ctx.request.body.action;
+    const loginname = ctx.params.name;
+    const user = await service.user.getUserByLoginName(loginname);
+
+    if (action === 'set_block') {
+      user.is_block = true;
+      await user.save();
+      ctx.body = { status: 'success' };
+    } else if (action === 'cancel_block') {
+      user.is_block = false;
+      await user.save();
+      ctx.body = { status: 'success' };
+    }
+  }
+
+  async deleteAll() {
+    const { ctx, service } = this;
+    const loginname = ctx.params.name;
+    const user = await service.user.getUserByLoginName(loginname);
+
+    // 删除主题
+    await ctx.model.Topic.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 删除评论
+    await ctx.model.Reply.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 点赞数也全部干掉
+    await ctx.model.Reply.update({}, { $pull: { ups: user._id } }, { multi: true });
+    ctx.body = { status: 'success' };
+  }
+
+  async listCollectedTopics() {
+    const { ctx, service } = this;
+    const name = ctx.params.name;
+    const page = Number(ctx.query.page) || 1;
+    const limit = this.config.list_topic_count;
+
+    const user = await service.user.getUserByLoginName(name);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '这个用户不存在。';
+      return;
+    }
+
+    const pages = Math.ceil(user.collect_topic_count / limit);
+    const opt = { skip: (page - 1) * limit, limit };
+
+    const collects = await service.topicCollect.getTopicCollectsByUserId(user._id, opt);
+    const ids = collects.map(doc => {
+      return doc.topic_id.toString();
+    });
+
+    const query = { _id: { $in: ids } };
+    let topics = await service.topic.getTopicsByQuery(query, {});
+    topics = _.sortBy(topics, topic => {
+      return ids.indexOf(topic._id.toString());
+    });
+
+    await ctx.render('user/collect_topics', {
+      topics,
+      current_page: page,
+      pages,
+      user,
+    });
   }
 }
 

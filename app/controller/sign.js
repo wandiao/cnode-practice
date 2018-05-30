@@ -2,6 +2,7 @@
 
 const Controller = require('egg').Controller;
 const validator = require('validator');
+const utility = require('utility');
 
 class SignController extends Controller {
 
@@ -128,6 +129,33 @@ class SignController extends Controller {
     ctx.session = null;
     ctx.logout();
     ctx.redirect('/');
+  }
+
+  async activeAccount() {
+    const { ctx, service, config } = this;
+    const key = validator.trim(ctx.query.key || '');
+    const name = validator.trim(ctx.query.name || '');
+
+    const user = await service.user.getUserByLoginName(name);
+    if (!user) {
+      await ctx.render('notify/notify', { error: '用户不存在' });
+      return;
+    }
+
+    const passhash = user.pass;
+    if (!user || utility.md5(user.email + passhash + config.session_secret) !== key) {
+      await ctx.render('notify/notify', { error: '信息有误，帐号无法被激活。' });
+      return;
+    }
+
+    if (user.active) {
+      await ctx.render('notify/notify', { error: '帐号已经是激活状态。' });
+      return;
+    }
+
+    user.active = true;
+    await user.save();
+    await ctx.render('notify/notify', { success: '帐号已被激活，请登录' });
   }
 }
 

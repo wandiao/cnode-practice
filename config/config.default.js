@@ -88,6 +88,8 @@ module.exports = appInfo => {
   // 每个 IP 每天可创建用户数
   config.create_user_per_ip = 1000;
 
+  config.search = 'baidu'; // 'google', 'baidu', 'local'
+
   config.security = {
     csrf: {
       ignore: [ '/topic/*/top', '/api/*/*', '/topic/*/good', '/topic/*/lock' ],

@@ -18,6 +18,16 @@ class TopicCollectService extends Service {
     const query = { user_id: userId, topic_id: topicId };
     return this.ctx.model.TopicCollect.remove(query).exec();
   }
+
+  getTopicCollectsByUserId(userId, opt) {
+    const defaultOpt = { sort: '-create_at' };
+    opt = Object.assign(defaultOpt, opt);
+    return this.ctx.model.TopicCollect.find(
+      { user_id: userId },
+      '',
+      opt
+    ).exec();
+  }
 }
 
 module.exports = TopicCollectService;

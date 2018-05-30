@@ -6,12 +6,12 @@
 
     <div class='user_info'>
       <a class='dark reply_author' href="/user/{{reply.author.loginname}}">{{reply.author.loginname}}</a>
-      <a class="reply_time" href="#{{reply._id}}">{{ index + 1 }}楼•{{ helper.ago(reply.create_at)}}</a>
+      <a class="reply_time" href="#{{reply._id}}">{{ index }}楼•{{ helper.ago(reply.create_at)}}</a>
       {% if reply.author.loginname == topic.author.loginname %}
         <span class="reply_by_author">作者</span>
       {% endif %}
     </div>
-    <!-- <div class='user_action'>
+    <div class='user_action'>
       <span>
         <i class="fa up_btn
           {{'fa-thumbs-up uped' if current_user and is_uped(current_user, reply) else 'fa-thumbs-o-up'}}
@@ -20,7 +20,7 @@
           {{reply.ups.length if reply.ups and reply.ups.length else ''}}
         </span>
       </span>
-      {% if (current_user and current_user.is_admin) or (current_user && current_user._id.toString() == reply.author._id.toString()) %}
+      {% if (current_user and current_user.is_admin) or (current_user and current_user._id.toString() == reply.author._id.toString()) %}
       <a href='/reply/{{reply._id}}/edit' class='edit_reply_btn'>
         <i class="fa fa-pencil-square-o" title='编辑'></i>
       </a>
@@ -33,7 +33,7 @@
           <i class="fa fa-reply reply2_btn" title="回复"></i>
         {% endif %}
       </span>
-    </div> -->
+    </div>
   </div>
   <div class='reply_content from-{{reply.author.loginname}}'>
     {{helper.markdown(reply.content) | safe}}

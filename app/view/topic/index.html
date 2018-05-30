@@ -144,7 +144,8 @@
     <div class='header'>
       <span class='col_fade'>{{topic.replies.length }} 回复</span>
     </div>
-    {% for index, reply in topic.replies %}
+    {% for reply in topic.replies %}
+    {% set index = loop.index %}
     {% include '../reply/reply.html' %}
     {% endfor %}
   </div>
@@ -431,6 +432,9 @@
     $.ajax({
       url: '/reply/' + replyId + '/up',
       method: 'POST',
+      data: {
+        _csrf: "{{csrf}}",
+      }
     }).done(function (data) {
       if (data.success) {
         $this.removeClass('invisible');

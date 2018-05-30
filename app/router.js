@@ -11,6 +11,9 @@ module.exports = app => {
     user,
     topic,
     reply,
+    message,
+    page,
+    search,
   } = controller;
 
   const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
@@ -42,6 +45,7 @@ module.exports = app => {
 
   router.get('/signin', sign.showLogin); // 进入登录页面
   router.all('/signout', sign.signout);
+  router.get('/active_account', sign.activeAccount); // 帐号激活
 
   router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
   router.post('/setting', userRequired, user.setting);
@@ -63,4 +67,27 @@ module.exports = app => {
   router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
 
   router.post('/:topic_id/reply', userRequired, reply.add); // 提交一级回复
+
+  router.get('/reply/:reply_id/edit', userRequired, reply.showEdit); // 修改自己的评论页
+  router.post('/reply/:reply_id/edit', userRequired, reply.update); // 修改某评论
+  router.post('/reply/:reply_id/delete', userRequired, reply.delete); // 删除某评论
+  router.post('/reply/:reply_id/up', userRequired, reply.up); // 为评论点赞
+
+  router.get('/my/messages', userRequired, message.index); // 用户个人的所有消息页
+
+  router.get('/user/:name', user.index); // 用户个人主页
+
+  router.post('/user/set_star', adminRequired, user.toggleStar); // 把某用户设为达人
+  router.post('/user/cancel_star', adminRequired, user.toggleStar); // 取消某用户的达人身份
+  router.post('/user/:name/block', adminRequired, user.block); // 禁言某用户
+  router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
+  router.get('/user/:name/collections', user.listCollectedTopics); // 用户收藏的所有话题页
+
+  router.get('/about', page.about);
+  router.get('/faq', page.faq);
+  router.get('/getstart', page.getstart);
+  router.get('/robots.txt', page.robots);
+  router.get('/api', page.api);
+
+  router.get('/search', search.index);
 };

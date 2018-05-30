@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+{% include'../sidebar.html' %}
+
+{% if tab === 'user' %}
+{% set users = data %}
+{% endif %}
+{% if tab === 'topic' %}
+{% set topics = data %}
+{% endif %}
+<div id='content'>
+  <div class='panel'>
+    <div class='header'>
+      <ul class='breadcrumb'>
+        <li><a href='/'>主页</a><span class='divider'>/</span></li>
+        <li class='active'><a href='{{ base }}'>搜索</a></li>
+      </ul>
+    </div>
+    <div class='inner'>
+      {% if users and users.length > 0 %}
+        {% for user in users %}
+        {% include '../user/user.html' %}
+        {% endfor %}
+        {% if not tab %}
+          <div>
+            <a href="{{base}}{{ '?' if base.indexOf('?') < 0 else '&' }}tab=user">查看更多用户 ...</a>
+          </div>
+        {% endif %}
+      {% elif not tab %}
+        <p>没有找到用户</p>
+      {% endif %}
+      {% if not tab %}
+        <hr />
+      {% endif %}
+      {% if topics and topics.length %}
+        <div id="topic_list">
+          {% for topic in topics %}
+            {% include '../topic/abstract.html' %}
+          {% endfor %}
+        </div>
+        {% if not tab %}
+          <div>
+            <a href="{{base}}{{ '?' if base.indexOf('?') < 0 else '&' }}tab=topic">查看更多帖子 ...</a>
+          </div>
+        {% endif %}
+      {% elif not tab %}
+      <% } else if (!tab) { %>
+        <p>没有找到帖子</p>
+      {% endif %}
+
+      {% if tab %}
+      <div class='pagination' current_page='{{ current_page }}'>
+        <ul>
+          {% if current_page == 1 %}
+          <li class='disabled'><a>«</a></li>
+          {% else %}
+          <li><a href="{{base}}{{ '?' if base.indexOf('?') < 0 else '&' }}tab={{tab}}&page=1">«</a></li>
+          {% endif %}
+
+          {% set page_start = 0 if current_page - 2 > 0 else 1 %}
+          {% set page_end = pages if page_start + 4 >= pages else page_start + 4 %}
+
+          {% if page_start > 1 %}
+          <li><a>...</a></li>
+          {% endif %}
+
+          <% for(var i = page_start; i <= page_end; i++) { %>
+          <% if (i === current_page) { %>
+          <li class='disabled'><a><%= i %></a></li>
+          <% } else { %>
+          <li><a href='<%= base_url + i %>'><%= i %></a></li>
+          <% } %>
+          <% } %>
+
+          <% if (page_end < pages ) { %>
+          <li><a>...</a></li>
+          <% } %>
+
+          <% if (current_page == pages) { %>
+          <li class='disabled'><a>»</a></li>
+          <% } else { %>
+          <li><a href='<%= base_url + pages %>'>»</a></li>
+          <% } %>
+        </ul>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<script>
+  $('#q').val('<%- keyword %>');
+  $(document).ready(function () {
+    var $nav = $('.pagination');
+    var current_page = $nav.attr('current_page');
+    if (current_page) {
+      $nav.find('li').each(function () {
+        var $li = $(this);
+        var $a = $li.find('a');
+        if ($a.html() == current_page) {
+          $li.addClass('active');
+          $a.removeAttr('href');
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}
