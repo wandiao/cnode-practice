@@ -88,12 +88,22 @@ module.exports = appInfo => {
   // 每个 IP 每天可创建用户数
   config.create_user_per_ip = 1000;
 
-  config.search = 'baidu'; // 'google', 'baidu', 'local'
+  config.search = 'local'; // 'google', 'baidu', 'local'
 
   config.security = {
     csrf: {
       ignore: [ '/topic/*/top', '/api/*/*', '/topic/*/good', '/topic/*/lock' ],
     },
+  };
+
+  // RSS配置
+  config.rss = {
+    title: 'CNode：Node.js专业中文社区',
+    link: 'http://cnodejs.org',
+    language: 'zh-cn',
+    description: 'CNode：Node.js专业中文社区',
+    // 最多获取的RSS Item数量
+    max_rss_items: 50,
   };
 
   return config;

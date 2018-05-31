@@ -14,6 +14,7 @@ module.exports = app => {
     message,
     page,
     search,
+    rss,
   } = controller;
 
   const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
@@ -82,6 +83,9 @@ module.exports = app => {
   router.post('/user/:name/block', adminRequired, user.block); // 禁言某用户
   router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
   router.get('/user/:name/collections', user.listCollectedTopics); // 用户收藏的所有话题页
+  router.get('/users/top100', user.top100); // 显示积分前一百用户页
+  router.get('/user/:name/topics', user.listTopics); // 用户发布的所有话题页
+  router.get('/user/:name/replies', user.listReplies); // 用户参与的所有回复页
 
   router.get('/about', page.about);
   router.get('/faq', page.faq);
@@ -90,4 +94,6 @@ module.exports = app => {
   router.get('/api', page.api);
 
   router.get('/search', search.index);
+
+  router.get('/rss', rss.index);
 };

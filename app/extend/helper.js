@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const jsxss = require('xss');
 
+moment.locale('zh-cn'); // 使用中文
+
 // Set default options
 const md = new MarkdownIt();
 

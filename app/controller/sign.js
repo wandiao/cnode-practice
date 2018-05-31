@@ -95,7 +95,7 @@ class SignController extends Controller {
       return;
     }
 
-    const user = await service.user.getUserByQuery({
+    const user = await service.user.getUsersByQuery({
       $or: [
         { loginname },
         { email },

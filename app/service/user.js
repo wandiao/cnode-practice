@@ -41,7 +41,7 @@ class UserService extends Service {
     return user.save();
   }
 
-  getUserByQuery(query, opt) {
+  getUsersByQuery(query, opt) {
     return this.ctx.model.User.find(query, '', opt).exec();
   }
 
@@ -98,6 +98,14 @@ class UserService extends Service {
     const query = { _id: id };
     const update = { $inc: { collect_topic_count: 1 } };
     return this.ctx.model.User.findByIdAndUpdate(query, update).exec();
+  }
+
+  /*
+   * 获取关键词能搜索到的用户数量
+   * @param {String} query 搜索关键词
+   */
+  getCountByQuery(query) {
+    return this.ctx.model.User.count(query).exec();
   }
 }
 

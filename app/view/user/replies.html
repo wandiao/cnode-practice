@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+{% include '../sidebar.html' %}
+
+<div id='content'>
+  <div class='panel'>
+    <div class='header'>
+      <ul class='breadcrumb'>
+        <li><a href='/'>主页</a><span class='divider'>/</span></li>
+        <li class='active'><a href="/user/<%=user.loginname%>">{{user.loginname}}的主页</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class='panel'>
+    <div class="header">{{ user.loginname }} 参与的话题</div>
+    <div class="inner padding">
+    {% if topics and topics.length %}
+    {% set base = '/user/' + user.loginname + '/replies' %}
+    {% include '../topic/list.html' %}
+    {% else %}
+      <div class='inner'>
+        <p>无话题</p>
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</div>
+{% endblock %}

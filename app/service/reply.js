@@ -102,6 +102,10 @@ class ReplyService extends Service {
   getRepliesByAuthorId(authorId, opt = null) {
     return this.ctx.model.Reply.find({ author_id: authorId }, {}, opt).exec();
   }
+  // 通过 author_id 获取回复总数
+  getCountByAuthorId(authorId) {
+    return this.ctx.model.Reply.count({ author_id: authorId }).exec();
+  }
 }
 
 module.exports = ReplyService;

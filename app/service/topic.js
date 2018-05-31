@@ -153,6 +153,14 @@ class TopicService extends Service {
 
     return topic;
   }
+
+  /*
+   * 获取关键词能搜索到的主题数量
+   * @param {String} query 搜索关键词
+   */
+  getCountByQuery(query) {
+    return this.ctx.model.Topic.count(query).exec();
+  }
 }
 
 module.exports = TopicService;

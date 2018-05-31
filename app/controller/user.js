@@ -204,6 +204,80 @@ class UserController extends Controller {
       user,
     });
   }
+  async top100() {
+    const { ctx, service } = this;
+    const opt = { limit: 100, sort: '-score' };
+    const tops = await service.user.getUsersByQuery({ is_block: false }, opt);
+    await ctx.render('user/top100', {
+      users: tops,
+      pageTitle: 'top100',
+    });
+  }
+
+  async listTopics() {
+    const { ctx, service, config } = this;
+    const user_name = ctx.params.name;
+    const page = Number(ctx.query.page) || 1;
+    const limit = config.list_topic_count;
+
+    const user = await service.user.getUserByLoginName(user_name);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '这个用户不存在。';
+      return;
+    }
+
+    const query = { author_id: user._id };
+    const opt = { skip: (page - 1) * limit, limit, sort: '-create_at' };
+    const [ topics, all_topics_count ] = await Promise.all([
+      service.topic.getTopicsByQuery(query, opt),
+      service.topic.getCountByQuery(query),
+    ]);
+    const pages = Math.ceil(all_topics_count / limit);
+
+    await ctx.render('user/topics', {
+      user,
+      topics,
+      current_page: page,
+      pages,
+    });
+  }
+
+  async listReplies() {
+    const { ctx, service } = this;
+    const user_name = ctx.params.name;
+    const page = Number(ctx.query.page) || 1;
+    const limit = 50;
+
+    const user = await service.user.getUserByLoginName(user_name);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '这个用户不存在。';
+      return;
+    }
+
+    const opt = { skip: (page - 1) * limit, limit, sort: '-create_at' };
+    const replies = await service.reply.getRepliesByAuthorId(user._id, opt);
+    const topic_ids = [ ...new Set(replies.map(reply => {
+      return reply.topic_id.toString();
+    })) ];
+    // 获取所有有评论的主题
+    const query = { _id: { $in: topic_ids } };
+    let topics = await service.topic.getTopicsByQuery(query, {});
+    topics = _.sortBy(topics, topic => {
+      return topic_ids.indexOf(topic._id.toString());
+    });
+    const count = await service.reply.getCountByAuthorId(user._id);
+    const pages = Math.ceil(count / limit);
+
+    await ctx.render('user/replies', {
+      user,
+      topics,
+      current_page: page,
+      pages,
+    });
+  }
 }
 
 module.exports = UserController;
